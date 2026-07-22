@@ -1,0 +1,7 @@
+# PUBLIC REPO — scraped lead data (emails = PII) must never be committed here.
+*.csv
+*.tsv
+out/
+.env
+.env.*
+node_modules/

@@ -1,0 +1,13 @@
+{
+  "name": "peekscout-instagram-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Daily ramped cold-outreach sender for PeekScout (Instagram-scraped leads).",
+  "scripts": {
+    "send": "node src/send.mjs",
+    "dry": "node src/send.mjs --dry-run",
+    "seed": "node src/seed.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -8,6 +8,20 @@
 // Idempotent: existing leads (and their SENT status) are left untouched.
 
 import { readFile } from "node:fs/promises";
+import { readFileSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Auto-load a local .env (repo-root) so `node src/seed.mjs` works without an
+// inline token. .env is gitignored — the token never enters this public repo.
+(function loadEnv() {
+  const p = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
+  if (!existsSync(p)) return;
+  for (const line of readFileSync(p, "utf8").split(/\r?\n/)) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/i);
+    if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+  }
+})();
 
 const API_BASE = (process.env.OUTREACH_API_BASE || "https://www.peekscout.com").replace(/\/$/, "");
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN;

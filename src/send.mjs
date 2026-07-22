@@ -14,6 +14,21 @@
 // weeks since the FIRST send (server tells us firstSentAt), so volume climbs on
 // its own with zero date config.
 
+import { readFileSync, existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Auto-load a local .env for local runs (CI passes env directly). .env is
+// gitignored, so tokens never enter this public repo.
+(function loadEnv() {
+  const p = join(dirname(fileURLToPath(import.meta.url)), "..", ".env");
+  if (!existsSync(p)) return;
+  for (const line of readFileSync(p, "utf8").split(/\r?\n/)) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/i);
+    if (m && process.env[m[1]] === undefined) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+  }
+})();
+
 const API_BASE = (process.env.OUTREACH_API_BASE || "https://www.peekscout.com").replace(/\/$/, "");
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;

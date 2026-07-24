@@ -3,7 +3,7 @@
 //
 // Pulls the next batch of NEW leads from PeekScout's /api/outreach (which
 // already excludes anyone on the suppression list), sends the first-touch pitch
-// from the getpeekscout.com sending domain via Resend, and marks each lead
+// from the trypeekscout.com sending domain via Resend, and marks each lead
 // SENT/FAILED so it's never emailed twice. Send-state lives in the DB, so this
 // is safe to run in ephemeral CI.
 //
@@ -32,7 +32,7 @@ import { fileURLToPath } from "node:url";
 const API_BASE = (process.env.OUTREACH_API_BASE || "https://www.peekscout.com").replace(/\/$/, "");
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN;
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM = process.env.OUTREACH_FROM_EMAIL || "Peek Scout <hello@getpeekscout.com>";
+const FROM = process.env.OUTREACH_FROM_EMAIL || "Peek Scout <hello@trypeekscout.com>";
 const SITE_URL = (process.env.SITE_URL || "https://www.peekscout.com").replace(/\/$/, "");
 const MAILING_ADDRESS = process.env.MAILING_ADDRESS;
 
@@ -46,10 +46,10 @@ const dryRun = flag("dry-run");
 const DAY = 24 * 60 * 60 * 1000;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// getpeekscout.com only — never send cold mail from the primary domain.
+// trypeekscout.com only — never send cold mail from the primary domain.
 const FROM_ADDR = (FROM.match(/<([^>]+)>/)?.[1] || FROM).trim();
-if ((FROM_ADDR.split("@")[1] || "").toLowerCase() !== "getpeekscout.com") {
-  console.error(`Refusing: cold outreach must send from getpeekscout.com, not "${FROM_ADDR}".`);
+if ((FROM_ADDR.split("@")[1] || "").toLowerCase() !== "trypeekscout.com") {
+  console.error(`Refusing: cold outreach must send from trypeekscout.com, not "${FROM_ADDR}".`);
   process.exit(1);
 }
 

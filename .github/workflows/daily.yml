@@ -1,11 +1,10 @@
 name: daily-outreach
 
-# Weekday mornings, ~9:30am ET (13:30 UTC). Cold email lands best Mon–Fri.
-# send.mjs computes the ramped daily cap itself (grows with weeks since first send)
-# and exits early on weekends as a second guard.
+# Every morning, ~9:30am ET (13:30 UTC). send.mjs computes the ramped daily cap
+# itself (grows with weeks since first send).
 on:
   schedule:
-    - cron: "30 13 * * 1-5"
+    - cron: "30 13 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

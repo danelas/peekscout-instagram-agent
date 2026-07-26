@@ -53,13 +53,6 @@ if ((FROM_ADDR.split("@")[1] || "").toLowerCase() !== "trypeekscout.com") {
   process.exit(1);
 }
 
-// Skip weekends — cold email lands better Mon–Fri (cron is weekday-only too).
-const dow = new Date().getUTCDay(); // 0 Sun .. 6 Sat
-if ((dow === 0 || dow === 6) && !flag("force")) {
-  console.log("Weekend — skipping. (Use --force to override.)");
-  process.exit(0);
-}
-
 // ── email content ──────────────────────────────────────────────────────────
 function firstName(email) {
   const local = email.split("@")[0];

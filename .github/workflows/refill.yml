@@ -1,0 +1,55 @@
+name: refill-leads
+
+# Keeps ig_outreach_leads topped up so the daily sender never runs dry.
+# Scrapes IG hashtags (targets/hashtags.txt) -> extracts contacts (bio + website
+# + link-in-bio ladder) -> dedupes -> seeds NEW leads into PeekScout via
+# /api/outreach. Seeding is idempotent: existing leads/SENT status are untouched,
+# so re-scraping the same accounts just skips duplicates.
+#
+# Weekly by default (Sunday 12:00 UTC, before Monday's first send). Bump to
+# 0,3 (Sun+Wed) or daily if you send faster than this refills. Costs Apify
+# credits per run — roughly (tags * limit) posts for discovery plus one profile
+# scrape per unique handle. Uses the APIFY_TOKEN secret.
+on:
+  schedule:
+    - cron: "0 12 * * 0"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Posts scanned per hashtag (more = more leads + more cost)"
+        type: string
+        default: "40"
+
+concurrency:
+  group: refill-leads
+  cancel-in-progress: false
+
+jobs:
+  refill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Discover handles + extract contacts
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          TAGS=$(grep -vE '^[[:space:]]*#|^[[:space:]]*$' targets/hashtags.txt | paste -sd, -)
+          echo "Scraping $(echo "$TAGS" | tr ',' '\n' | wc -l) hashtags at limit ${{ inputs.limit || '40' }}"
+          node src/discover.mjs --tags "$TAGS" --limit "${{ inputs.limit || '40' }}" --business-only --run
+
+      - name: Merge to a deduped master list
+        run: node src/merge.mjs
+
+      - name: Seed new leads into ig_outreach_leads
+        env:
+          OUTREACH_API_BASE: ${{ vars.OUTREACH_API_BASE }}
+          ADMIN_TOKEN: ${{ secrets.ADMIN_TOKEN }}
+        run: |
+          MASTER=$(ls -t src/out/master-*.csv 2>/dev/null | head -1)
+          if [ -z "$MASTER" ]; then echo "No master CSV produced — nothing to seed."; exit 0; fi
+          echo "Seeding $MASTER"
+          node src/seed.mjs "$MASTER"

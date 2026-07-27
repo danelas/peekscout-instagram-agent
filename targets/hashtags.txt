@@ -1,0 +1,49 @@
+# IG hashtags the refill job scrapes for new provider leads.
+# One tag per line (with or without #). Blank lines and #comments ignored.
+# Format is usually <city><service>. Edit freely — add cities/categories,
+# comment out ones that underperform. Each tag costs ~posts-per-run in Apify
+# credits, so keep the list proportional to how fast you send.
+#
+# massage + all local-service categories, spread across major metros.
+
+# --- massage ---
+miamimassage
+orlandomassage
+tampamassage
+atlantamassage
+houstonmassage
+dallasmassage
+phoenixmassage
+lasvegasmassage
+
+# --- lashes / brows ---
+miamilashes
+atlantalashes
+houstonlashtech
+dallasbrows
+
+# --- nails ---
+miaminails
+orlandonails
+atlantanails
+houstonnails
+
+# --- hair / barber ---
+miamihairstylist
+atlantahairstylist
+houstonbarber
+dallashairstylist
+
+# --- skincare / esthetician / spa ---
+miamiesthetician
+atlantaesthetician
+houstonfacials
+miamimedspa
+
+# --- other local services ---
+miamicleaning
+atlantacleaning
+houstonpersonaltrainer
+miamimakeupartist
+atlantaphotographer
+houstontattoo
